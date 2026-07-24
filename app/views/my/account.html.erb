@@ -29,6 +29,12 @@ See COPYRIGHT and LICENSE files for more details.
 
 <% html_title(t(:label_my_account), t(:label_account)) -%>
 
+<% content_for :header_tags do %>
+  <%# Department and other attributes can be changed out-of-band by an admin, so a
+      cached Turbo snapshot would show stale values on a restoration visit (OP-19674). %>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end %>
+
 <%=
   render(Primer::OpenProject::PageHeader.new) do |header|
     header.with_title { t(:label_account) }
