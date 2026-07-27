@@ -100,6 +100,7 @@ RSpec.describe "Variant creation wizard", :js, with_flag: { type_variants: true 
     expect_step_saved(:project_attributes)
 
     # Step 5 - Workflow
+    expect(page).to have_css("#workflow_form", visible: :all)
     click_on I18n.t(:button_continue)
     expect_step_saved(:workflows)
 
