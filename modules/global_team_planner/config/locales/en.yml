@@ -56,6 +56,7 @@ en:
       add_row_no_results: "No matching members found"
       new_work_package_button: "New work package"
       new_work_package_for_row: "New work package for %{name}"
+      save_view_to_add_rows: "Create team schedule"
       remove_row_button: "Remove"
       remove_row_confirm: "Remove this row? This only changes the schedule view, it does not modify or unassign any work package."
       no_dates: "No dates set"
@@ -85,6 +86,9 @@ en:
       no_team_rows:
         title: "No team members added"
         description: "Add team members or enable the Unassigned row to start scheduling work."
+      unsaved_view:
+        title: "Create a team schedule to get started"
+        description: "Team members are saved as part of a schedule. Create one to start adding members and planning their work across projects."
       no_work_packages:
         title: "No work packages in this range"
         description: "No matching scheduled work packages intersect the selected dates."

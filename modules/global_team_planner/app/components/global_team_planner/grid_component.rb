@@ -45,6 +45,14 @@ module GlobalTeamPlanner
 
     DAY_COLUMN_OFFSET = 2 # column 1 is the sticky assignee column
 
+    # Deliberately NOT named `anchor`: Rails' url_for treats an `anchor:`
+    # option as the URL *fragment*, so `path(anchor: "2026-08-04")` silently
+    # produces `/path#2026-08-04` instead of `/path?anchor=2026-08-04` — the
+    # value never reaches the server as a param, and every date-range
+    # navigation link becomes a no-op. (This bug was present in the original
+    # project-scoped module too and was ported forward before being caught.)
+    ANCHOR_PARAM = :anchor_date
+
     def initialize(view:, current_user:, params: {})
       super
 
@@ -73,7 +81,7 @@ module GlobalTeamPlanner
     def anchor_date
       @anchor_date ||= begin
         requested = begin
-          @params[:anchor].presence && Date.parse(@params[:anchor])
+          @params[ANCHOR_PARAM].presence && Date.parse(@params[ANCHOR_PARAM])
         rescue StandardError
           nil
         end
@@ -189,10 +197,12 @@ module GlobalTeamPlanner
     end
 
     def nav_url(anchor:, mode: display_mode)
+      params = { ANCHOR_PARAM => anchor.iso8601, :mode => mode }
+
       if @view.persisted?
-        helpers.global_team_planner_view_path(@view, anchor: anchor.iso8601, mode:)
+        helpers.global_team_planner_view_path(@view, **params)
       else
-        helpers.global_team_planner_path(anchor: anchor.iso8601, mode:)
+        helpers.global_team_planner_path(**params)
       end
     end
 

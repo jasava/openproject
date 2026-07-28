@@ -190,7 +190,9 @@ export default class CardController extends Controller {
     }
 
     const surface = (this.element as HTMLElement).closest<HTMLElement>('.op-global-team-planner--surface');
-    data.append('anchor', surface?.dataset.anchorDate ?? '');
+    // `anchor_date`, not `anchor`: GridComponent reads this param name
+    // because Rails' url_for treats `anchor` as the URL fragment.
+    data.append('anchor_date', surface?.dataset.anchorDate ?? '');
     data.append('mode', surface?.dataset.displayMode ?? '');
     data.append('view_id', surface?.dataset.viewId ?? '');
 

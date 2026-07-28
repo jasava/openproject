@@ -36,6 +36,19 @@ RSpec.describe "GlobalTeamPlanner requests", :skip_csrf, type: :rails_request do
       expect(response.body).to include(I18n.t(:label_global_team_planner))
     end
 
+    it "offers a way to create a schedule rather than a dead-end 'add members' message" do
+      login_as member
+
+      get global_team_planner_path
+
+      # Regression: the add-row control was hidden on an unsaved view (it needs
+      # a view id), leaving the page telling the user to add team members with
+      # no control to do it.
+      expect(response.body).to include(I18n.t("global_team_planner.grid.save_view_to_add_rows"))
+      expect(response.body).to include(I18n.t("global_team_planner.empty_state.unsaved_view.title"))
+      expect(response.body).not_to include(I18n.t("global_team_planner.empty_state.no_team_rows.description"))
+    end
+
     it "shows a forbidden/no-access state for a user without work-package view access anywhere" do
       login_as outsider
 
@@ -91,6 +104,52 @@ RSpec.describe "GlobalTeamPlanner requests", :skip_csrf, type: :rails_request do
       get global_team_planner_view_path(view)
 
       expect(response).to have_http_status(:ok)
+    end
+
+    describe "date-range and display-mode navigation" do
+      let(:nav_view) { create(:global_team_planner_view, principal: member, assignee_ids: [member.id]) }
+
+      it "renders the grid inside a real turbo-frame the nav links can target" do
+        login_as member
+
+        get global_team_planner_view_path(nav_view)
+
+        # Regression: the wrapper was a plain <div>, so every data-turbo-frame
+        # nav link silently did nothing (Turbo only navigates frame elements).
+        expect(response.body).to match(/<turbo-frame[^>]*id="global-team-planner-#{nav_view.id}-grid"/)
+      end
+
+      it "emits nav links carrying the anchor as a real query param, not a URL fragment" do
+        login_as member
+
+        get global_team_planner_view_path(nav_view)
+
+        # Regression: `anchor:` is reserved by Rails' url_for as the fragment,
+        # so links rendered as `...#2026-08-04` and the date never reached the
+        # server — arrows and week/2-week/4-week buttons appeared to do nothing.
+        expect(response.body).to include("anchor_date=")
+        expect(response.body).not_to match(%r{href="/team_schedule/views/#{nav_view.id}\?mode=[a-z_]+#\d{4}-})
+      end
+
+      it "actually shifts the visible range when an anchor_date is supplied" do
+        login_as member
+
+        get global_team_planner_view_path(nav_view, anchor_date: "2026-08-25", mode: "one_week")
+
+        expect(response.body).to include('data-anchor-date="2026-08-25"')
+      end
+
+      it "actually changes the number of rendered day columns when the mode changes" do
+        login_as member
+
+        get global_team_planner_view_path(nav_view, mode: "one_week")
+        one_week_days = response.body.scan("op-global-team-planner--day-header ").size
+
+        get global_team_planner_view_path(nav_view, mode: "four_weeks")
+        four_week_days = response.body.scan("op-global-team-planner--day-header ").size
+
+        expect(four_week_days).to be > one_week_days
+      end
     end
 
     it "still renders a card the viewer can see but not edit, just without the drag/resize affordance" do

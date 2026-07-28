@@ -15,7 +15,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ++#%>
 
-<%= component_wrapper(class: "op-global-team-planner") do %>
+<%#
+  Must be a real <turbo-frame>, not a <div>: every date-range/display-mode
+  link below targets this element via `data-turbo-frame`, and Turbo only
+  navigates actual frame elements — pointing at a plain div silently does
+  nothing. `data-turbo-action: advance` keeps the browser URL (and back
+  button) in sync with the range/mode currently shown.
+%>
+<%= component_wrapper(
+      tag: "turbo-frame",
+      class: "op-global-team-planner",
+      data: { "turbo-action": "advance" }
+    ) do %>
   <div class="op-global-team-planner--toolbar">
     <div class="op-global-team-planner--nav" role="group" aria-label="<%= t("global_team_planner.grid.date_range_navigation") %>">
       <%= link_to nav_url(anchor: visible_range.previous_anchor),
@@ -52,9 +63,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <% end %>
     </div>
 
-    <% if view.persisted? && view.manageable?(User.current) %>
-      <%= link_to t("global_team_planner.grid.add_row_button"),
-                  new_row_global_team_planner_view_path(view),
+    <%#
+      An unsaved default view has no id, so the member-add member route
+      (which needs one) cannot be linked yet. Rather than hiding the control
+      entirely — which left the default /team_schedule page showing "add team
+      members to get started" with no way to do so — offer creating a saved
+      schedule first, which is the actual required next step.
+    %>
+    <% if view.persisted? %>
+      <% if view.manageable?(User.current) %>
+        <%= link_to t("global_team_planner.grid.add_row_button"),
+                    new_row_global_team_planner_view_path(view),
+                    class: "Button Button--primary",
+                    data: { controller: "async-dialog" } %>
+      <% end %>
+    <% else %>
+      <%= link_to t("global_team_planner.grid.save_view_to_add_rows"),
+                  new_global_team_planner_view_path,
                   class: "Button Button--primary",
                   data: { controller: "async-dialog" } %>
     <% end %>
@@ -84,10 +109,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           blankslate.with_description { t("global_team_planner.empty_state.no_selected_projects.description") }
         end %>
   <% elsif no_team_rows? %>
+    <%# An unsaved view can't hold rows yet, so "add team members" would be
+        misleading advice — point at creating a schedule instead. %>
+    <% state = view.persisted? ? "no_team_rows" : "unsaved_view" %>
     <%= render(Primer::Beta::Blankslate.new) do |blankslate|
           blankslate.with_visual_icon(icon: :people)
-          blankslate.with_heading(tag: :h2) { t("global_team_planner.empty_state.no_team_rows.title") }
-          blankslate.with_description { t("global_team_planner.empty_state.no_team_rows.description") }
+          blankslate.with_heading(tag: :h2) { t("global_team_planner.empty_state.#{state}.title") }
+          blankslate.with_description { t("global_team_planner.empty_state.#{state}.description") }
         end %>
   <% else %>
     <% if no_matching_work_packages? %>
