@@ -170,8 +170,12 @@ module TeamSchedules
         )
     end
 
+    # `reorder(nil)` drops the ORDER BY inherited from the query's sort
+    # criteria — PostgreSQL rejects a GROUP BY query whose ORDER BY
+    # references a column (e.g. work_packages.id) that is neither grouped
+    # nor aggregated, which `effective_query.results` otherwise carries in.
     def unscheduled_by_row
-      @unscheduled_by_row ||= base_scope.where(start_date: nil, due_date: nil)
+      @unscheduled_by_row ||= base_scope.reorder(nil).where(start_date: nil, due_date: nil)
                                         .group(:assigned_to_id).count
     end
   end

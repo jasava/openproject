@@ -23,5 +23,24 @@ FactoryBot.define do
     project
     principal factory: :user
     public { false }
+
+    # A schedule created through the real create flow always has a query
+    # (see TeamSchedules::SetAttributesService) — build one by default so
+    # specs exercise the same `effective_query.results` SQL path production
+    # traffic does. Without this, `effective_query` is nil and `GridComponent`
+    # silently takes its "no query" short-circuit branch instead, which is
+    # exactly how a real GROUP BY/ORDER BY conflict against the query's
+    # default sort criteria slipped past every existing spec.
+    after(:build) do |schedule|
+      next if schedule.query
+
+      query = schedule.build_default_query
+      query.name = "Query for #{schedule.name}"
+      schedule.query = query
+    end
+
+    trait :without_query do
+      after(:build) { |schedule| schedule.query = nil }
+    end
   end
 end
