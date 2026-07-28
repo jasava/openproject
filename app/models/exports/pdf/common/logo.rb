@@ -35,7 +35,10 @@ module Exports::PDF::Common::Logo
   end
 
   def logo_image_filename
-    custom_logo_image_filename || Rails.root.join("app/assets/images/logo_openproject.png")
+    # LocalDesign::PdfBranding is only ever consulted once the existing
+    # (Enterprise) lookup above returns nil — see
+    # docs/local-design/upgrade-guide.md, section 5.
+    custom_logo_image_filename || LocalDesign::PdfBranding.logo_path || Rails.root.join("app/assets/images/logo_openproject.png")
   end
 
   def custom_logo_image_filename # rubocop:disable Metrics/AbcSize

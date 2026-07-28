@@ -1,0 +1,102 @@
+<%#-- copyright
+OpenProject Local Design
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%= form_tag update_local_design_theme_path, method: :post, class: "form" do %>
+  <section class="form--section">
+    <fieldset class="form--fieldset">
+      <legend class="form--fieldset-legend"><%= t("local_design.theme.label") %></legend>
+      <div class="form--field">
+        <div class="form--field-container">
+          <%= styled_select_tag "theme",
+                                options_for_select(
+                                  LocalDesign::ColorThemes.names - [LocalDesign::ColorThemes::CUSTOM_THEME_NAME],
+                                  @local_design_setting.theme
+                                ),
+                                container_class: "-slim" %>
+        </div>
+      </div>
+      <%= styled_button_tag t(:button_save),
+                            data: {
+                              test_selector: "local-design-theme-button",
+                              turbo_confirm: t("local_design.theme.change_warning")
+                            } %>
+    </fieldset>
+  </section>
+<% end %>
+
+<div data-controller="local-design--preview"
+     data-local-design--preview-min-contrast-value="4.5"
+     data-local-design--preview-invalid-format-message-value="<%= t("local_design.upload.invalid_hex_format") %>"
+     data-local-design--preview-contrast-warning-template-value="<%= t("local_design.contrast_warning", ratio: "%<ratio>s", minimum: "%<minimum>s") %>">
+  <%= render "local_design/preview_panel" %>
+
+  <%= form_tag update_local_design_colors_path, method: :post, class: "form" do %>
+    <section class="form--section">
+      <fieldset class="form--fieldset">
+        <legend class="form--fieldset-legend"><%= t("local_design.colors.legend") %></legend>
+        <p><%= t("local_design.colors.description") %></p>
+
+        <% theme_defaults = LocalDesign::ColorThemes.full_palette_for(@local_design_setting.theme) ||
+                             LocalDesign::ColorThemes.full_palette_for(LocalDesign::ColorThemes::DEFAULT_THEME_NAME) %>
+        <% LocalDesign::Design::SUPPORTED_COLOR_KEYS.each do |key| %>
+          <%= render "local_design/color_field",
+                     key:,
+                     value: @local_design_setting.effective_color(key),
+                     theme_default: theme_defaults[key],
+                     css_var: LocalDesign::Design.css_variable_for(key) %>
+        <% end %>
+
+        <%= styled_button_tag t(:button_save), data: { test_selector: "local-design-colors-button" } %>
+      </fieldset>
+    </section>
+  <% end %>
+</div>
+
+<section class="form--section" data-controller="local-design--reset"
+         data-local-design--reset-confirm-default-value="<%= t("local_design.reset.confirm") %>"
+         data-local-design--reset-confirm-with-assets-value="<%= t("local_design.reset.confirm_with_assets") %>">
+  <fieldset class="form--fieldset">
+    <legend class="form--fieldset-legend"><%= t("local_design.reset.button") %></legend>
+    <%= form_tag reset_local_design_path, method: :post, class: "form -vertical" do %>
+      <div class="form--field">
+        <span class="form--field-container">
+          <label class="form--label-with-check-box">
+            <%= check_box_tag "remove_assets", "1", false,
+                              data: {
+                                "local-design--reset-target": "removeAssets",
+                                action: "local-design--reset#syncConfirmMessage"
+                              } %>
+            <%= t("local_design.reset.remove_assets_label") %>
+          </label>
+        </span>
+      </div>
+      <%=
+        render(
+          Primer::Beta::Button.new(
+            type: :submit,
+            scheme: :danger,
+            data: {
+              test_selector: "local-design-reset-button",
+              "local-design--reset-target": "submitButton",
+              turbo_confirm: t("local_design.reset.confirm")
+            }
+          )
+        ) { t("local_design.reset.button") }
+      %>
+    <% end %>
+  </fieldset>
+</section>

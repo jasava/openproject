@@ -29,7 +29,11 @@
 <!-- global meta hooks before any scripts are loaded-->
 <%= call_hook :view_layouts_base_html_meta %>
 
-<%= render "common/favicons" %>
+<% if local_design_active? %>
+  <%= render partial: "local_design/favicons" %>
+<% else %>
+  <%= render "common/favicons" %>
+<% end %>
 
 <%# Include CLI assets (development) or prod build assets %>
 <%= include_frontend_assets %>
@@ -51,6 +55,15 @@
     <% if CustomStyle.current.touch_icon.present? %>
       <link rel="apple-touch-icon" sizes="180x180" href="<%= custom_style_touch_icon_path(digest: CustomStyle.current.digest, filename: CustomStyle.current.touch_icon_identifier) %>">
     <% end %>
+  <% end %>
+<% elsif local_design_active? %>
+  <%# Independent (non-Enterprise) "Design" feature — see
+      docs/local-design/adr-001-independent-design-feature.md. Only takes
+      effect when no licensed Enterprise custom style is active (the
+      `elsif` above), so the two features never visually conflict. %>
+  <% cache(LocalDesignSetting.current) do %>
+    <%= render partial: "local_design/logo_css" %>
+    <%= render partial: "local_design/inline_css" %>
   <% end %>
 <% end %>
 

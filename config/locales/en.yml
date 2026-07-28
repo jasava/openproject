@@ -627,6 +627,84 @@ en:
         <strong>Warning:</strong> Unchecking this option disables SSL verification of the LDAP server certificate.
         This exposes your connection to Man in the Middle attacks.
       tls_certificate_description: "If the LDAP server certificate is not in the trust sources of this system, you can add it manually here. Enter a PEM X509 certifiate string."
+  local_design:
+    description: "Choose how OpenProject looks to you with themes, select your default colors to use in the app, and upload your own logo and icons."
+    tabs:
+      interface: "Interface"
+      branding: "Branding"
+      pdf_export_styles: "PDF export styles"
+      pdf_export_font: "PDF export font"
+    theme:
+      label: "Color theme"
+      change_warning: "Selecting a predefined theme will overwrite your current color choices. Continue?"
+    colors:
+      legend: "Interface colors"
+      description: "These colors are applied across OpenProject as soon as you save them."
+      primary_button_background: "Primary button background"
+      primary_button_hover_background: "Primary button hover background"
+      accent_color: "Primary / accent color"
+      link_color: "Link color"
+      link_hover_color: "Link hover color"
+      header_background: "Header background"
+      header_hover_background: "Header hover background"
+      header_foreground: "Header foreground / icon color"
+      main_menu_background: "Main menu background"
+      main_menu_foreground: "Main menu foreground"
+      main_menu_hover_background: "Main menu hover background"
+      main_menu_selected_background: "Main menu selected background"
+      main_menu_selected_foreground: "Main menu selected foreground"
+      body_background: "Body background"
+      focus_indicator_color: "Focus indicator color"
+    reset_default: "Reset to theme default"
+    contrast_warning: "This combination may be hard to read: contrast ratio is only %<ratio>s:1 (recommended at least %<minimum>s:1)."
+    reset:
+      button: "Reset to OpenProject defaults"
+      confirm: "This will reset the theme and all colors to OpenProject defaults. Continue?"
+      confirm_with_assets: "This will reset the theme, all colors, and remove all uploaded branding assets (logos, favicon, touch icon). This cannot be undone. Continue?"
+      remove_assets_label: "Also remove uploaded branding assets (logos, favicon, touch icon)"
+    branding:
+      logo:
+        label: "Desktop logo"
+        instructions: "Used in the header on desktop screens. Recommended: transparent PNG or WEBP, roughly 460×60px."
+      logo_mobile:
+        label: "Mobile logo"
+        instructions: "Used in the header on narrow/mobile screens. Falls back to the desktop logo when not set."
+      favicon:
+        label: "Favicon"
+        instructions: "Shown in browser tabs and bookmarks. Recommended: square PNG, at least 32×32px."
+      touch_icon:
+        label: "Touch icon"
+        instructions: "Used when OpenProject is added to a mobile home screen. Recommended: square PNG, at least 180×180px."
+      upload_note: "The uploaded file is publicly accessible once saved."
+    pdf_export:
+      instructions: "These images are used in generated PDF exports (work package PDF export, PDF reports). They are only applied when no licensed Enterprise custom style is configured."
+      logo:
+        label: "PDF header logo"
+        instructions: "Shown in the header of every page of a PDF export. Recommended: PNG or JPEG."
+      cover:
+        label: "PDF cover background"
+        instructions: "Used as the full-page background image on a PDF export's cover page. Recommended: PNG or JPEG."
+      footer:
+        label: "PDF footer image"
+        instructions: "Shown in the footer of every page of a PDF export. Recommended: PNG or JPEG."
+      cover_text_color:
+        label: "PDF cover text color"
+        instructions: "Text color used for the title/heading/dates on a PDF export's cover page. Leave blank to use the default."
+      fonts:
+        legend_instructions: "Upload a regular TrueType (.ttf) font to enable custom PDF fonts; bold, italic, and bold-italic are optional and fall back to the regular cut when missing."
+        instructions: "TrueType (.ttf) font file, up to 30 MB."
+        pdf_font_regular: "Regular"
+        pdf_font_bold: "Bold"
+        pdf_font_italic: "Italic"
+        pdf_font_bold_italic: "Bold Italic"
+    preview:
+      label: "Preview"
+      description: "This preview updates as you type and is not saved until you press Save."
+      sample_text: "This is a sample text showing body content and a standard link."
+    upload:
+      invalid_extension: "is not one of the allowed file types (%{allowed})."
+      invalid_hex_format: "Enter a valid hex color, e.g. #1A67A3 or #1AF."
+    asset_delete_confirm: "Remove this file? This cannot be undone."
   forums:
     show:
       no_results_title_text: There are currently no posts for the forum.
@@ -1900,6 +1978,21 @@ en:
         onthefly: "Automatic user creation"
         port: "Port"
         tls_certificate_string: "LDAP server SSL certificate"
+      local_design_setting:
+        theme: "Theme"
+        colors: "Colors"
+        logo: "Desktop logo"
+        logo_mobile: "Mobile logo"
+        favicon: "Favicon"
+        touch_icon: "Touch icon"
+        pdf_logo: "PDF logo"
+        pdf_cover: "PDF cover image"
+        pdf_footer: "PDF footer image"
+        pdf_cover_text_color: "PDF cover text color"
+        pdf_font_regular: "PDF font (regular)"
+        pdf_font_bold: "PDF font (bold)"
+        pdf_font_italic: "PDF font (italic)"
+        pdf_font_bold_italic: "PDF font (bold italic)"
       mcp_configuration:
         enabled: Enabled
         title: Title
@@ -2229,6 +2322,8 @@ en:
         inclusion: "is not set to one of the allowed values."
         inclusion_nested: "is not set to one of the allowed values at path '%{path}'."
         invalid: "is invalid."
+        invalid_font: "could not be read as a valid TrueType (.ttf) font."
+        invalid_image: "could not be read as a valid image."
         invalid_uri: "must be a valid URI."
         invalid_url: "is not a valid URL."
         invalid_url_scheme: "is not a supported protocol (allowed: %{allowed_schemes})."
@@ -2266,6 +2361,8 @@ en:
         unknown_property: "is not a known property."
         unknown_property_nested: "has the unknown path '%{path}'."
         unremovable: "cannot be removed."
+        unsupported_asset_field: "is not a supported asset field (%{field})."
+        unsupported_key: "is not a supported color key (%{key})."
         url_not_secure_context: >
           is not providing a "Secure Context". Either use HTTPS or a loopback address, such as localhost.
         user_already_in_department: "User %{user_id} is already a member of department %{department_id}."

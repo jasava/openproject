@@ -1,0 +1,93 @@
+<%#-- copyright
+OpenProject Local Design
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%#
+  Phase 15. Only takes visual effect in generated PDFs when no licensed,
+  configured Enterprise custom style is active (see
+  docs/local-design/data-model.md, "Branding asset precedence") — the demo
+  PDF button below is the easiest way to check which one currently applies.
+%>
+<p class="form--field-instructions"><%= t("local_design.pdf_export.instructions") %></p>
+
+<%=
+  render(
+    Primer::Beta::Button.new(
+      target: "_blank",
+      data: { turbo: false },
+      tag: :a,
+      href: export_demo_pdf_download_local_design_path
+    )
+  ) { t("export.demo.button_text") }
+%>
+
+<%= render partial: "local_design/uploads/image", locals: {
+      field: :pdf_logo,
+      label: t("local_design.pdf_export.logo.label"),
+      present: @local_design_setting.pdf_logo.present?,
+      source: @local_design_setting.pdf_logo.present? ? local_design_asset_download_path(:pdf_logo) : nil,
+      img_class: "local-design-pdf-logo-preview",
+      accept: "image/png,image/jpeg,image/gif,image/webp",
+      instructions: t("local_design.pdf_export.logo.instructions")
+    } %>
+
+<%= render partial: "local_design/uploads/image", locals: {
+      field: :pdf_cover,
+      label: t("local_design.pdf_export.cover.label"),
+      present: @local_design_setting.pdf_cover.present?,
+      source: @local_design_setting.pdf_cover.present? ? local_design_asset_download_path(:pdf_cover) : nil,
+      img_class: "local-design-pdf-cover-preview",
+      accept: "image/png,image/jpeg,image/gif,image/webp",
+      instructions: t("local_design.pdf_export.cover.instructions")
+    } %>
+
+<%= form_tag update_local_design_pdf_cover_text_color_path, method: :post, class: "form -vertical" do %>
+  <section class="form--section">
+    <fieldset class="form--fieldset">
+      <legend class="form--fieldset-legend"><%= t("local_design.pdf_export.cover_text_color.label") %></legend>
+      <div class="form--field">
+        <span class="form--field-container">
+          <div class="form--field-affix">
+            <%= icon_for_color(
+                  Color.new(hexcode: @local_design_setting.pdf_cover_text_color.presence || "#000000"),
+                  data: { target: "#local_design_pdf_cover_text_color" }
+                ) %>
+          </div>
+          <span class="form--text-field-container">
+            <%= styled_text_field_tag "pdf_cover_text_color",
+                                      @local_design_setting.pdf_cover_text_color,
+                                      id: "local_design_pdf_cover_text_color",
+                                      placeholder: "#000000" %>
+          </span>
+        </span>
+        <div class="form--field-instructions"><%= t("local_design.pdf_export.cover_text_color.instructions") %></div>
+      </div>
+      <%= styled_button_tag t(:button_save), data: { test_selector: "local-design-pdf-cover-text-color-button" } %>
+    </fieldset>
+  </section>
+<% end %>
+
+<% if OpenProject::FeatureDecisions.minutes_styling_meeting_pdf_active? %>
+  <%= render partial: "local_design/uploads/image", locals: {
+        field: :pdf_footer,
+        label: t("local_design.pdf_export.footer.label"),
+        present: @local_design_setting.pdf_footer.present?,
+        source: @local_design_setting.pdf_footer.present? ? local_design_asset_download_path(:pdf_footer) : nil,
+        img_class: "local-design-pdf-footer-preview",
+        accept: "image/png,image/jpeg,image/gif,image/webp",
+        instructions: t("local_design.pdf_export.footer.instructions")
+      } %>
+<% end %>

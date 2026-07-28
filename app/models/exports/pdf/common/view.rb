@@ -55,7 +55,9 @@ class Exports::PDF::Common::View
   end
 
   def self.default_font
-    valid_custom_font? ? CUSTOM_FONT_NAME : FONT_SPEC[:latin].first[:name]
+    return CUSTOM_FONT_NAME if valid_custom_font? || LocalDesign::PdfBranding.custom_font_active?
+
+    FONT_SPEC[:latin].first[:name]
   end
 
   def self.valid_custom_font?
@@ -111,7 +113,11 @@ class Exports::PDF::Common::View
   end
 
   def register_fonts!(document)
-    register_custom_font!(document) if Exports::PDF::Common::View.valid_custom_font?
+    if Exports::PDF::Common::View.valid_custom_font?
+      register_custom_font!(document)
+    elsif LocalDesign::PdfBranding.custom_font_active?
+      register_font_family!(CUSTOM_FONT_NAME, LocalDesign::PdfBranding.font_files, document)
+    end
     register_font_group!(:latin, :register_full_font!, document)
     register_font_group!(:fonts, :register_base_font!, document)
     register_font_group!(:mono, :register_full_font!, document)

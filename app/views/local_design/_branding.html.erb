@@ -1,0 +1,28 @@
+<%#-- copyright
+OpenProject Local Design
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<% %i[logo logo_mobile favicon touch_icon].each do |field| %>
+  <%= render partial: "local_design/uploads/image", locals: {
+        field:,
+        label: t("local_design.branding.#{field}.label"),
+        present: @local_design_setting.public_send(field).present?,
+        source: @local_design_setting.public_send(field).present? ? local_design_asset_download_path(field) : nil,
+        img_class: "local-design-#{field.to_s.dasherize}-preview",
+        accept: "image/png,image/jpeg,image/gif,image/webp",
+        instructions: t("local_design.branding.#{field}.instructions")
+      } %>
+<% end %>

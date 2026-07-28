@@ -1,0 +1,63 @@
+<%#-- copyright
+OpenProject Local Design
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%#
+  Phase 10 fallback rules, applied via the same `.op-logo--*` classes the
+  real header already renders (see frontend/src/global_styles/content/
+  _custom_logo.sass and common/header/app-header.sass) — mirroring
+  CustomStyle's own _inline_css_logo.erb structure, independently, for the
+  Local Design settings:
+    - both logos set    -> desktop logo on wide screens, mobile logo on narrow
+    - only mobile set    -> mobile logo everywhere
+    - only desktop set   -> desktop logo everywhere; small-screen waffle icon
+                            falls back to the stock OpenProject icon (no
+                            custom desktop-only icon asset exists to shrink)
+    - neither set        -> stock OpenProject branding, unchanged
+%>
+<% setting = LocalDesignSetting.current
+   has_logo = setting.logo.present?
+   has_logo_mobile = setting.logo_mobile.present?
+
+   logo_url = has_logo ? local_design_asset_download_path(:logo) : asset_path("logo_openproject_white_big.png")
+   high_contrast_logo_url = has_logo ? local_design_asset_download_path(:logo) : asset_path("logo_openproject.png")
+
+   if has_logo_mobile
+     mobile_logo_url = local_design_asset_download_path(:logo_mobile)
+     logo_icon_url = logo_icon_white_url = mobile_logo_url
+     logo_url = high_contrast_logo_url = mobile_logo_url unless has_logo
+   else
+     logo_icon_url = asset_path("icon_logo.svg")
+     logo_icon_white_url = asset_path("icon_logo_white.svg")
+   end %>
+
+<style type="text/css">
+  .op-logo--link {
+    background-image: url(<%= logo_url %>);
+  }
+
+  .op-logo--icon {
+    background-image: url(<%= logo_icon_url %>);
+  }
+
+  .op-logo--icon_white {
+    background-image: url(<%= logo_icon_white_url %>);
+  }
+
+  .op-logo--link_high_contrast {
+    background-image: url(<%= high_contrast_logo_url %>);
+  }
+</style>

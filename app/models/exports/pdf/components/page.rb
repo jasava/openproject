@@ -95,6 +95,10 @@ module Exports::PDF::Components::Page
   end
 
   def custom_footer_image
+    custom_style_footer_image || LocalDesign::PdfBranding.footer_path
+  end
+
+  def custom_style_footer_image
     return unless CustomStyle.current.present? &&
                   CustomStyle.current.export_footer.present? && CustomStyle.current.export_footer.local_file.present?
 

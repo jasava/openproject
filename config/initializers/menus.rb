@@ -667,9 +667,23 @@ Redmine::MenuManager.map :admin_menu do |menu|
             last: true,
             icon: "info"
 
+  # Local Design (independent, non-Enterprise "Design" feature) — Phase 2,
+  # Approach A: the Enterprise entry below is shown only once actually
+  # licensed; otherwise this entry (same caption, same icon, so exactly one
+  # "Design" item is ever visible) takes its place, pointing at the
+  # independent LocalDesignController instead of the upsell page. This is a
+  # menu-visibility change only — it does not touch `guard_enterprise_
+  # feature`, `EnterpriseToken`, or the `enterprise_feature:` mechanism
+  # below; see docs/local-design/upgrade-guide.md.
+  menu.push :local_design,
+            { controller: "/local_design", action: :show },
+            if: ->(_) { User.current.admin? && !EnterpriseToken.allows_to?(:define_custom_style) },
+            caption: :label_custom_style,
+            icon: "paintbrush"
+
   menu.push :custom_style,
             { controller: "/custom_styles", action: :show },
-            if: ->(_) { User.current.admin? },
+            if: ->(_) { User.current.admin? && EnterpriseToken.allows_to?(:define_custom_style) },
             caption: :label_custom_style,
             icon: "paintbrush",
             enterprise_feature: "define_custom_style"

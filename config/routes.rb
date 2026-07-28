@@ -231,6 +231,16 @@ Rails.application.routes.draw do
       as: "custom_style_touch_icon",
       constraints: { filename: /[^\/]*/ }
 
+  # Public (unauthenticated) download for Local Design assets, mirroring the
+  # custom_style/:digest/... routes above — a logged-out visitor must be
+  # able to load the login-page logo/favicon. :field is validated against
+  # LocalDesign::DeleteAssetService::ALL_FIELDS server-side; neither :digest
+  # nor :filename is used to resolve a filesystem path (see
+  # LocalDesignController#download_asset).
+  get "local_design/:digest/:field/:filename" => "local_design#download_asset",
+      as: "local_design_download_asset",
+      constraints: { filename: /[^\/]*/ }
+
   get "highlighting/styles(/:version_tag)" => "highlighting#styles",
       as: "highlighting_css_styles"
 
@@ -628,6 +638,19 @@ Rails.application.routes.draw do
     resource :custom_style, only: %i[update show create], path: "design" do
       get :export_demo_pdf_download
     end
+
+    # Independent "Design" feature — see LocalDesignController. Admin-only
+    # (enforced server-side by require_admin, not just by hiding the menu
+    # item/buttons — Phase 2).
+    get "local_design" => "local_design#show", as: "local_design"
+    post "local_design/theme" => "local_design#update_theme", as: "update_local_design_theme"
+    post "local_design/colors" => "local_design#update_colors", as: "update_local_design_colors"
+    post "local_design/reset" => "local_design#reset", as: "reset_local_design"
+    post "local_design/assets/:field" => "local_design#upload_asset", as: "upload_local_design_asset"
+    delete "local_design/assets/:field" => "local_design#delete_asset", as: "delete_local_design_asset"
+    post "local_design/pdf_cover_text_color" => "local_design#update_pdf_cover_text_color",
+         as: "update_local_design_pdf_cover_text_color"
+    get "local_design/demo_pdf" => "local_design#export_demo_pdf_download", as: "export_demo_pdf_download_local_design"
 
     resources :attribute_help_texts, only: %i(index new create edit update destroy)
 

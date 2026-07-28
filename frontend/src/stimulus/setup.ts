@@ -34,6 +34,8 @@ import HeaderProjectSelectController from './controllers/header-project-select.c
 import NonWorkingTimesController from './controllers/dynamic/users/non-working-times.controller';
 import NonWorkingTimesFormController from './controllers/dynamic/users/non-working-times-form.controller';
 import OpPasswordForceChangeController from './controllers/password-force-change.controller';
+import LocalDesignPreviewController from './controllers/dynamic/local-design/preview.controller';
+import LocalDesignResetController from './controllers/dynamic/local-design/reset.controller';
 
 import AutoSubmit from '@stimulus-components/auto-submit';
 import RevealController from '@stimulus-components/reveal';
@@ -103,6 +105,8 @@ OpenProjectStimulusApplication.preregister('check-all', CheckAllController);
 OpenProjectStimulusApplication.preregister('header-project-select', HeaderProjectSelectController);
 OpenProjectStimulusApplication.preregister('checkable', CheckableController);
 OpenProjectStimulusApplication.preregister('expandable-text', ExpandableTextController);
+OpenProjectStimulusApplication.preregister('local-design--preview', LocalDesignPreviewController);
+OpenProjectStimulusApplication.preregister('local-design--reset', LocalDesignResetController);
 
 const instance = OpenProjectStimulusApplication.start();
 window.Stimulus = instance;

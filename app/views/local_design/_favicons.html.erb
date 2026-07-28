@@ -1,0 +1,42 @@
+<%#-- copyright
+OpenProject Local Design
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%#
+  Phase 11. Mirrors common/_favicons.html.erb's own per-icon independent
+  fallback exactly (falls back to the same stock OpenProject asset paths),
+  so an uncustomized Local Design install looks byte-for-byte identical to
+  the stock partial. _common_head.html.erb renders this one *instead of*
+  common/_favicons.html.erb (never both), so there is never a duplicate
+  favicon/touch-icon <link> tag.
+%>
+<% if local_favicon_present? %>
+  <%= favicon_link_tag local_design_asset_download_path(:favicon) %>
+<% else %>
+  <%= favicon_link_tag OpenProject::CustomStyles::Design.favicon_asset_path %>
+<% end %>
+
+<% if local_touch_icon_present? %>
+  <%= favicon_link_tag local_design_asset_download_path(:touch_icon),
+                       rel: "apple-touch-icon",
+                       type: "image/png",
+                       sizes: "180x180" %>
+<% else %>
+  <%= favicon_link_tag OpenProject::CustomStyles::Design.apple_touch_icon_asset_path,
+                       rel: "apple-touch-icon",
+                       type: "image/png",
+                       sizes: "120x120" %>
+<% end %>

@@ -1,0 +1,65 @@
+<%#-- copyright
+OpenProject Local Design
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%#
+  Phase 8: only fixed, server-controlled property names
+  (LocalDesign::Design::CSS_VARIABLES) are ever printed on the left of a
+  `:` — never a user-provided string — and only values that already passed
+  LocalDesignSetting's `RGB_HEX_FORMAT` validation are printed on the right,
+  each still run through `sanitize_hex` (belt-and-suspenders: this partial
+  must never trust that every past/future write path revalidated). No
+  `html_safe`/`raw` on anything user-influenced.
+%>
+<% setting = LocalDesignSetting.current %>
+<style type="text/css">
+  :root {
+    <% setting.effective_colors.each do |key, value| %>
+      <%= LocalDesign::Design.css_variable_for(key) %>: <%= sanitize_hex(value) %>;
+    <% end %>
+  }
+
+  <%#
+    The five variables below did not exist in v17.6.0 (see
+    LocalDesign::Design::NEWLY_INTRODUCED_VARIABLE_KEYS) so, unlike the ten
+    above, setting them alone has no visual effect — these small rules are
+    what actually consumes them. They are a best-effort, conservatively
+    scoped mapping onto the closest existing OpenProject selectors found in
+    frontend/src/global_styles at analysis time, not a guarantee of
+    pixel-perfect parity with every hover state in the app (some hover
+    feedback is applied via JS-toggled classes rather than native `:hover`,
+    which a CSS-only rule cannot reach) — see docs/local-design/testing.md,
+    "Known limitations", for the full caveat. Reused variables (the other
+    ten) have no such limitation: they plug directly into selectors that
+    already exist.
+  %>
+  .op-uc-container a {
+    color: var(--op-local-design-link-color);
+  }
+  .op-uc-container a:hover {
+    color: var(--op-local-design-link-hover-color);
+  }
+  .op-app-header a:hover,
+  .op-app-header button:hover {
+    background-color: var(--op-local-design-header-hover-background);
+  }
+  #main-menu a:hover {
+    background-color: var(--op-local-design-main-menu-hover-background);
+  }
+  :focus-visible {
+    outline-color: var(--op-local-design-focus-indicator-color);
+  }
+</style>

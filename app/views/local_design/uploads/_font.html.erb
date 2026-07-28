@@ -1,0 +1,67 @@
+<%#-- copyright
+OpenProject Local Design
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%#
+  Locals:
+    field   - Symbol, one of LocalDesignSetting::FONT_FIELDS
+    label   - String
+    present - Boolean
+    filename- String or nil, the stored file's display name when present
+    instructions - String
+%>
+<%= form_tag upload_local_design_asset_path(field:), method: :post,
+                                                     multipart: true, class: "form -vertical" do %>
+  <section class="form--section">
+    <fieldset class="form--fieldset">
+      <legend class="form--fieldset-legend"><%= label %></legend>
+      <p class="form--field-instructions"><%= instructions %></p>
+      <% if present %>
+        <p>
+          <%= render(Primer::Beta::Octicon.new(icon: :file)) %>
+          <strong><%= filename %></strong>
+        </p>
+      <% end %>
+      <div class="grid-block">
+        <div class="form--field -required">
+          <div class="attachment_field form--field-container -vertical -shrink">
+            <div class="form--file-container">
+              <%= file_field_tag "file", required: true, class: "attachment_choose_file", accept: ".ttf,font/ttf", size: "15" %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <%=
+        render(Primer::Beta::Button.new(type: :submit)) do |button|
+          button.with_leading_visual_icon(icon: present ? :upload : :plus)
+          t(present ? :button_replace : :button_upload)
+        end
+      %>
+      <% if present %>
+        <%= render(
+              Primer::Beta::Button.new(
+                tag: :a,
+                href: delete_local_design_asset_path(field:),
+                data: { turbo_method: :delete, turbo_confirm: t("local_design.asset_delete_confirm") }
+              )
+            ) do |button|
+              button.with_leading_visual_icon(icon: :trash)
+              t(:button_delete)
+            end %>
+      <% end %>
+    </fieldset>
+  </section>
+<% end %>

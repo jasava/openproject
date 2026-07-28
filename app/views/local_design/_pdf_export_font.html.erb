@@ -1,0 +1,39 @@
+<%#-- copyright
+OpenProject Local Design
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%#
+  Phase 16. The regular cut is required before any custom font is applied
+  to exports (LocalDesign::PdfBranding.custom_font_active?) — uploading only
+  bold/italic/bold-italic with no regular cut leaves PDF exports on the
+  default OpenProject font, matching the task's explicit requirement.
+%>
+<p class="form--field-instructions"><%= t("local_design.pdf_export.fonts.legend_instructions") %></p>
+
+<%=
+  render(
+    Primer::Beta::Button.new(
+      target: "_blank",
+      data: { turbo: false },
+      tag: :a,
+      href: export_demo_pdf_download_local_design_path
+    )
+  ) { t("export.demo.button_text") }
+%>
+
+<% local_design_pdf_font_fields.each do |font| %>
+  <%= render partial: "local_design/uploads/font", locals: font %>
+<% end %>

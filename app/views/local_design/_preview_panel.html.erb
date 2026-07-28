@@ -1,0 +1,57 @@
+<%#-- copyright
+OpenProject Local Design
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%#
+  A self-contained mockup, not the real OpenProject header/sidebar — Phase 9
+  is explicit that unsaved colors must never be applied globally. The
+  Stimulus controller only ever sets CSS custom properties on this
+  `previewRoot` element, so they cascade to the mockup markup below (which
+  references the very same `var(--...)` names the real header/sidebar use)
+  and nowhere else in the page.
+%>
+<div class="form--section local-design-preview" data-local-design--preview-target="previewRoot" role="img"
+     aria-label="<%= t("local_design.preview.label") %>">
+  <p class="form--field-instructions"><%= t("local_design.preview.description") %></p>
+
+  <div class="local-design-preview--header">
+    <span class="local-design-preview--logo" aria-hidden="true"><%= Setting.app_title %></span>
+    <span class="local-design-preview--search" aria-hidden="true"></span>
+    <span class="local-design-preview--header-icon" aria-hidden="true"></span>
+    <span class="local-design-preview--header-icon" aria-hidden="true"></span>
+  </div>
+
+  <div class="local-design-preview--body">
+    <div class="local-design-preview--sidebar" aria-hidden="true">
+      <span class="local-design-preview--menu-item"><%= t(:label_overview) %></span>
+      <span class="local-design-preview--menu-item -selected"><%= t(:label_work_package_plural) %></span>
+      <span class="local-design-preview--menu-item"><%= t(:label_activity) %></span>
+    </div>
+
+    <div class="local-design-preview--content" aria-hidden="true">
+      <button type="button" class="local-design-preview--primary-button" tabindex="-1">
+        <%= t(:button_save) %>
+      </button>
+      <button type="button" class="local-design-preview--secondary-button" tabindex="-1">
+        <%= t(:button_cancel) %>
+      </button>
+      <span class="local-design-preview--link" tabindex="-1"><%= t(:label_more) %></span>
+      <p class="local-design-preview--sample-text">
+        <%= t("local_design.preview.sample_text") %>
+      </p>
+    </div>
+  </div>
+</div>

@@ -86,6 +86,10 @@ module Exports::PDF::Components::Cover
   end
 
   def validate_cover_text_color
+    custom_style_cover_text_color || LocalDesign::PdfBranding.cover_text_color
+  end
+
+  def custom_style_cover_text_color
     return nil if CustomStyle.current.blank?
 
     hexcode = CustomStyle.current.export_cover_text_color
@@ -193,7 +197,10 @@ module Exports::PDF::Components::Cover
   end
 
   def custom_cover_image
-    image_file = custom_cover_image_file
+    # LocalDesign::PdfBranding is only ever consulted once the existing
+    # (Enterprise) lookup above returns nil — see
+    # docs/local-design/upgrade-guide.md, section 5.
+    image_file = custom_cover_image_file || LocalDesign::PdfBranding.cover_path
     return unless image_file
 
     content_type = OpenProject::ContentTypeDetector.new(image_file).detect

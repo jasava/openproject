@@ -1,0 +1,78 @@
+<%#-- copyright
+OpenProject Local Design
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%#
+  Locals:
+    key           - String, one of LocalDesign::Design::SUPPORTED_COLOR_KEYS
+    value         - String, the current effective hex value (always present, never nil)
+    theme_default - String, the current theme's computed value for this key (for the
+                    client-side "reset to default" action — Phase 6/9)
+    css_var       - String, the CSS custom property this key controls (Phase 9 preview)
+%>
+<div class="form--field" data-local-design--preview-target="fieldWrapper">
+  <label class="form--label" for="local_design_color_<%= key %>">
+    <%= t("local_design.colors.#{key}") %>
+  </label>
+  <span class="form--field-container">
+    <div class="form--field-affix">
+      <%= icon_for_color(
+            Color.new(hexcode: value),
+            data: { "local-design--preview-target": "swatch", key: }
+          ) %>
+    </div>
+    <span class="form--text-field-container">
+      <%= text_field_tag "colors[#{key}]",
+                         value,
+                         id: "local_design_color_#{key}",
+                         class: "local-design-color--hex-input",
+                         maxlength: 7,
+                         autocomplete: "off",
+                         "aria-describedby": "local_design_color_#{key}_feedback",
+                         data: {
+                           "local-design--preview-target": "hexInput",
+                           key:,
+                           "css-var": css_var,
+                           action: "input->local-design--preview#hexInputChanged"
+                         } %>
+    </span>
+    <input type="color"
+           value="<%= value %>"
+           aria-label="<%= t("local_design.colors.#{key}") %>"
+           autocomplete="off"
+           data-local-design--preview-target="nativeInput"
+           data-key="<%= key %>"
+           data-action="input->local-design--preview#nativeInputChanged">
+    <%= render(
+          Primer::Beta::IconButton.new(
+            icon: :sync,
+            "aria-label": t("local_design.reset_default"),
+            scheme: :invisible,
+            size: :small,
+            data: {
+              "local-design--preview-target": "resetButton",
+              key:,
+              default: theme_default,
+              action: "local-design--preview#resetField"
+            }
+          )
+        ) %>
+  </span>
+  <div class="form--field-instructions"
+       id="local_design_color_<%= key %>_feedback"
+       aria-live="polite"
+       data-local-design--preview-target="feedback"></div>
+</div>
