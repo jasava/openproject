@@ -1,0 +1,58 @@
+@import "helpers"
+
+.op-team-schedule-card
+  position: relative
+  z-index: 1
+  margin: 4px 2px
+  padding: 2px 8px
+  border-radius: var(--borderRadius-medium, 6px)
+  background: var(--bgColor-accent-emphasis, #0969da)
+  color: var(--fgColor-onEmphasis, #fff)
+  font-size: var(--text-body-size-small, 12px)
+  display: flex
+  align-items: center
+  gap: 4px
+  overflow: hidden
+  min-width: 0
+
+  &:focus-visible
+    outline: 2px solid var(--focus-outlineColor, #0969da)
+    outline-offset: 2px
+
+  &_milestone
+    border-radius: 999px
+    justify-content: center
+
+  &_draggable
+    cursor: grab
+
+    &:active
+      cursor: grabbing
+
+  &--subject
+    color: inherit
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+    flex: 1
+
+    &:hover
+      color: inherit
+      text-decoration: underline
+
+  &--status
+    flex-shrink: 0
+    opacity: 0.85
+    font-size: var(--text-body-size-small, 11px)
+
+  &--resize-handle
+    flex-shrink: 0
+    width: 6px
+    align-self: stretch
+    cursor: ew-resize
+
+    &:focus-visible
+      outline: 2px solid var(--fgColor-onEmphasis, #fff)
+
+[data-team-schedule-dragging]
+  user-select: none

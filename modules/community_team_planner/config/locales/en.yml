@@ -1,0 +1,73 @@
+en:
+  label_community_team_planner: "Team Schedule"
+
+  community_team_planner:
+    label_plural: "Team Schedules"
+    query_name: "Work packages for %{name}"
+    sidebar:
+      public: "Public"
+      private: "Private"
+
+    display_modes:
+      work_week: "Work week"
+      one_week: "1 week"
+      two_weeks: "2 weeks"
+      four_weeks: "4 weeks"
+
+    index:
+      title: "Team Schedules"
+      empty_state:
+        title: "No team schedules yet"
+        description: "Create a team schedule to see your project members and their work packages on a timeline."
+      new_button: "Team schedule"
+
+    new_dialog:
+      title: "New team schedule"
+      submit: "Create"
+      name_label: "Name"
+      public_label: "Visible to other project members"
+
+    edit_dialog:
+      title: "Rename team schedule"
+      submit: "Save"
+
+    grid:
+      today_button: "Today"
+      previous_range: "Previous"
+      next_range: "Next"
+      empty_rows: "Add a project member to start scheduling their work."
+      add_row_button: "Add member"
+      add_row_placeholder: "Search project members…"
+      remove_row_button: "Remove"
+      remove_row_confirm: "Remove this row? This only changes the schedule view, it does not modify or unassign any work package."
+      no_dates: "No dates set"
+      non_working_day: "Non-working day"
+      today: "Today"
+      date_range_navigation: "Date range navigation"
+      display_mode: "Display mode"
+      unscheduled_count:
+        one: "%{count} without dates"
+        other: "%{count} without dates"
+
+    card:
+      aria_label: "%{id} %{subject}, assignee %{assignee}, %{start_date} to %{due_date}, status %{status}"
+      no_assignee: "Unassigned"
+      resize_start: "Change start date"
+      resize_end: "Change finish date"
+
+    flash:
+      create_success: "Successful creation."
+      update_success: "Successful update."
+      delete_success: "Successful deletion."
+      row_added: "Member added to the schedule."
+      row_removed: "Member removed from the schedule."
+      card_move_error: "Could not update the work package."
+
+    permissions:
+      view_community_team_planner: "View team schedule"
+      manage_community_team_planner: "Manage team schedule"
+
+  project_module_community_team_planner: "Team schedule"
+
+  permission_view_community_team_planner: "View team schedule"
+  permission_manage_community_team_planner: "Manage team schedule"

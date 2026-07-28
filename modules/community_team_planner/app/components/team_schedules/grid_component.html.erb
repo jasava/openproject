@@ -1,0 +1,133 @@
+<%#-- copyright
+OpenProject Community Team Planner
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%= component_wrapper(class: "op-team-schedule") do %>
+  <div class="op-team-schedule--toolbar">
+    <div class="op-team-schedule--nav" role="group" aria-label="<%= t("community_team_planner.grid.date_range_navigation") %>">
+      <%= link_to nav_url(anchor: visible_range.previous_anchor),
+                  class: "Button Button--iconOnly Button--secondary",
+                  "aria-label": t("community_team_planner.grid.previous_range"),
+                  data: { "turbo-frame": wrapper_key } do %>
+        <%= render(Primer::Beta::Octicon.new(icon: "chevron-left")) %>
+      <% end %>
+
+      <%= link_to t("community_team_planner.grid.today_button"),
+                  nav_url(anchor: today),
+                  class: "Button Button--secondary",
+                  data: { "turbo-frame": wrapper_key } %>
+
+      <%= link_to nav_url(anchor: visible_range.next_anchor),
+                  class: "Button Button--iconOnly Button--secondary",
+                  "aria-label": t("community_team_planner.grid.next_range"),
+                  data: { "turbo-frame": wrapper_key } do %>
+        <%= render(Primer::Beta::Octicon.new(icon: "chevron-right")) %>
+      <% end %>
+
+      <h3 class="op-team-schedule--range-heading">
+        <%= "#{helpers.format_date(visible_range.range_start)} – #{helpers.format_date(visible_range.range_end)}" %>
+      </h3>
+    </div>
+
+    <div class="op-team-schedule--mode-switch" role="group" aria-label="<%= t("community_team_planner.grid.display_mode") %>">
+      <% TeamSchedule::DISPLAY_MODES.each do |mode| %>
+        <%= link_to t("community_team_planner.display_modes.#{mode}"),
+                    nav_url(anchor: anchor_date, mode:),
+                    class: "Button Button--secondary #{'Button--selected' if mode == display_mode}",
+                    "aria-pressed": mode == display_mode,
+                    data: { "turbo-frame": wrapper_key } %>
+      <% end %>
+    </div>
+
+    <% if @team_schedule.manageable?(User.current) %>
+      <%= link_to t("community_team_planner.grid.add_row_button"),
+                  new_row_project_team_schedule_path(@project, @team_schedule),
+                  class: "Button Button--primary",
+                  data: { controller: "async-dialog" } %>
+    <% end %>
+  </div>
+
+  <% if rows.empty? %>
+    <%= render(Primer::Beta::Blankslate.new) do |blankslate|
+          blankslate.with_visual_icon(icon: :people)
+          blankslate.with_description { t("community_team_planner.grid.empty_rows") }
+        end %>
+  <% else %>
+    <div class="op-team-schedule--scroll">
+      <div class="op-team-schedule--surface"
+           role="grid"
+           aria-label="<%= @team_schedule.name %>"
+           style="--op-team-schedule-day-count: <%= days.size %>;"
+           data-anchor-date="<%= anchor_date.iso8601 %>"
+           data-display-mode="<%= display_mode %>">
+
+        <div class="op-team-schedule--assignee-cell op-team-schedule--assignee-cell_header" style="grid-column: 1; grid-row: 1;" role="columnheader"></div>
+
+        <% days.each_with_index do |day, i| %>
+          <div class="op-team-schedule--day-header <%= "op-team-schedule--is-today" if day == today %> <%= "op-team-schedule--is-non-working" if non_working_day?(day) %>"
+               style="grid-column: <%= i + 2 %>; grid-row: 1;"
+               role="columnheader"
+               aria-label="<%= "#{day.strftime('%A')}#{", #{t('community_team_planner.grid.non_working_day')}" if non_working_day?(day)}" %>">
+            <span class="op-team-schedule--day-header-weekday"><%= day.strftime("%a") %></span>
+            <span class="op-team-schedule--day-header-number"><%= day.day %></span>
+          </div>
+        <% end %>
+
+        <% rows.each_with_index do |principal, index| %>
+          <% row_num = row_number(index) %>
+          <div class="op-team-schedule--assignee-cell" style="grid-column: 1; grid-row: <%= row_num %>;" role="rowheader">
+            <%= helpers.avatar(principal, size: "20", hide_name: true) %>
+            <span class="op-team-schedule--assignee-name"><%= principal.name %></span>
+            <% if @team_schedule.manageable?(User.current) %>
+              <%= link_to remove_row_project_team_schedule_path(@project, @team_schedule, principal_id: principal.id),
+                          class: "op-team-schedule--remove-row",
+                          "aria-label": t("community_team_planner.grid.remove_row_button"),
+                          data: { "turbo-method": :delete, "turbo-frame": wrapper_key,
+                                  "turbo-confirm": t("community_team_planner.grid.remove_row_confirm") } do %>
+                <%= render(Primer::Beta::Octicon.new(icon: "x")) %>
+              <% end %>
+            <% end %>
+            <% if unscheduled_count(principal.id).positive? %>
+              <span class="op-team-schedule--unscheduled-count">
+                <%= t("community_team_planner.grid.unscheduled_count", count: unscheduled_count(principal.id)) %>
+              </span>
+            <% end %>
+          </div>
+
+          <% days.each_with_index do |day, i| %>
+            <div class="op-team-schedule--day-cell <%= "op-team-schedule--is-today" if day == today %> <%= "op-team-schedule--is-non-working" if non_working_day?(day) %>"
+                 style="grid-column: <%= i + 2 %>; grid-row: <%= row_num %>;"
+                 data-date="<%= day.iso8601 %>"
+                 data-column-index="<%= i + 2 %>"
+                 data-row-index="<%= row_num %>"
+                 data-principal-id="<%= principal.id %>"></div>
+          <% end %>
+
+          <% (cards_by_row[principal.id] || []).each do |work_package| %>
+            <%= render(
+                  TeamSchedules::CardComponent.new(
+                    work_package:,
+                    team_schedule: @team_schedule,
+                    project: @project,
+                    grid_style: card_style(work_package, row_num)
+                  )
+                ) %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
