@@ -1,0 +1,65 @@
+<%#-- copyright
+OpenProject Global Team Planner
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%=
+  component_wrapper do
+    primer_form_with(
+      id: @form_id,
+      model: @view,
+      scope: :global_team_planner_view,
+      method: @method,
+      url: @url
+    ) do |f|
+      flex_layout do |flex|
+        if @base_errors&.any?
+          flex.with_row(mb: 3) do
+            render(Primer::Alpha::Banner.new(icon: :stop, scheme: :danger)) { @base_errors.join("\n") }
+          end
+        end
+
+        flex.with_row(mb: 3) do
+          render GlobalTeamPlannerViews::Forms::DetailsForm.new(f)
+        end
+
+        flex.with_row(mb: 3) do
+          render GlobalTeamPlannerViews::Forms::ProjectScopeForm.new(view: @view, current_user: @current_user)
+        end
+
+        if can_manage_public?
+          flex.with_row(mb: 3) do
+            render GlobalTeamPlannerViews::Forms::PublicForm.new(f)
+          end
+        end
+
+        if show_filters?
+          flex.with_row do
+            render(
+              ::Filters::FilterFormComponent.new(
+                builder: f,
+                query: @view.effective_query,
+                wrap_with_controller: true,
+                hidden_input_name: "filters",
+                output_format: :json,
+                autocomplete_append_to: "##{@form_id}"
+              )
+            )
+          end
+        end
+      end
+    end
+  end
+%>

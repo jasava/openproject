@@ -1,0 +1,30 @@
+<%#-- copyright
+OpenProject Global Team Planner
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%#
+  Phase "View access": "If the user cannot view work packages in any
+  project, show an appropriate empty or forbidden state" — distinct from
+  the in-grid "no accessible projects" empty state, which is for a user who
+  passed this check but whose *currently selected* scope has nothing in it.
+%>
+<% html_title t(:label_global_team_planner) %>
+
+<%= render(Primer::Beta::Blankslate.new) do |blankslate|
+      blankslate.with_visual_icon(icon: :lock)
+      blankslate.with_heading(tag: :h2) { t("global_team_planner.empty_state.no_accessible_projects.title") }
+      blankslate.with_description { t("global_team_planner.empty_state.no_accessible_projects.description") }
+    end %>

@@ -36,6 +36,9 @@ import NonWorkingTimesFormController from './controllers/dynamic/users/non-worki
 import OpPasswordForceChangeController from './controllers/password-force-change.controller';
 import LocalDesignPreviewController from './controllers/dynamic/local-design/preview.controller';
 import LocalDesignResetController from './controllers/dynamic/local-design/reset.controller';
+import GlobalTeamPlannerProjectPickerController from './controllers/dynamic/global-team-planner/project-picker.controller';
+import GlobalTeamPlannerPrincipalPickerController from './controllers/dynamic/global-team-planner/principal-picker.controller';
+import GlobalTeamPlannerCardController from './controllers/dynamic/global-team-planner/card.controller';
 
 import AutoSubmit from '@stimulus-components/auto-submit';
 import RevealController from '@stimulus-components/reveal';
@@ -106,6 +109,9 @@ OpenProjectStimulusApplication.preregister('header-project-select', HeaderProjec
 OpenProjectStimulusApplication.preregister('checkable', CheckableController);
 OpenProjectStimulusApplication.preregister('expandable-text', ExpandableTextController);
 OpenProjectStimulusApplication.preregister('local-design--preview', LocalDesignPreviewController);
+OpenProjectStimulusApplication.preregister('global-team-planner--card', GlobalTeamPlannerCardController);
+OpenProjectStimulusApplication.preregister('global-team-planner--project-picker', GlobalTeamPlannerProjectPickerController);
+OpenProjectStimulusApplication.preregister('global-team-planner--principal-picker', GlobalTeamPlannerPrincipalPickerController);
 OpenProjectStimulusApplication.preregister('local-design--reset', LocalDesignResetController);
 
 const instance = OpenProjectStimulusApplication.start();

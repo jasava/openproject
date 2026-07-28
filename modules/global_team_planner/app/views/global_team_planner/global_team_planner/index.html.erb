@@ -1,0 +1,44 @@
+<%#-- copyright
+OpenProject Global Team Planner
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<% html_title t("global_team_planner.index.title") %>
+
+<%= render(Primer::OpenProject::PageHeader.new) do |header|
+      header.with_title { t("global_team_planner.index.title") }
+      header.with_breadcrumbs([{ href: global_team_planner_path, text: t(:label_global_team_planner) }, t("global_team_planner.index.title")])
+    end %>
+
+<%= render(Primer::OpenProject::SubHeader.new) do |subheader|
+      subheader.with_action_button(
+        tag: :a,
+        href: new_global_team_planner_views_path,
+        scheme: :primary,
+        leading_icon: :plus,
+        label: t("global_team_planner.index.new_button"),
+        data: { controller: "async-dialog" }
+      ) { t("global_team_planner.index.new_button") }
+    end %>
+
+<% if @views.any? %>
+  <%= render(GlobalTeamPlannerViews::TableComponent.new(rows: @views)) %>
+<% else %>
+  <%= render(Primer::Beta::Blankslate.new) do |blankslate|
+        blankslate.with_visual_icon(icon: :people)
+        blankslate.with_heading(tag: :h2) { t("global_team_planner.index.empty_state.title") }
+        blankslate.with_description { t("global_team_planner.index.empty_state.description") }
+      end %>
+<% end %>

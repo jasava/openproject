@@ -1,0 +1,87 @@
+<%#-- copyright
+OpenProject Global Team Planner
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<div class="op-global-team-planner--project-scope" data-controller="show-when-value-selected">
+  <fieldset class="op-global-team-planner--project-scope-modes">
+    <legend><%= t("global_team_planner.project_scope.label") %></legend>
+
+    <% MODES.each do |mode| %>
+      <div class="form--field-container">
+        <label class="form--label-with-check-box" for="global_team_planner_view_project_scope_mode_<%= mode %>">
+          <%=
+            radio_button_tag(
+              "global_team_planner_view[project_scope_mode]",
+              mode,
+              @view.project_scope_mode == mode,
+              id: "global_team_planner_view_project_scope_mode_#{mode}",
+              data: {
+                "target-name": "project_scope_mode",
+                "show-when-value-selected-target": "cause"
+              }
+            )
+          %>
+          <%= t("global_team_planner.project_scope.#{mode}") %>
+        </label>
+      </div>
+    <% end %>
+  </fieldset>
+
+  <fieldset
+    class="op-global-team-planner--project-picker-wrapper"
+    data-target-name="project_scope_mode"
+    data-value="selected"
+    data-show-when-value-selected-target="effect"
+    <%= "hidden" unless @view.project_scope_mode == "selected" %>>
+    <legend><%= t("global_team_planner.project_scope.picker_label") %></legend>
+
+    <div
+      data-controller="global-team-planner--project-picker"
+      data-global-team-planner--project-picker-candidates-url-value="<%= global_team_planner_project_candidates_path %>"
+      data-global-team-planner--project-picker-no-results-message-value="<%= t("global_team_planner.project_scope.picker_no_results") %>"
+      data-global-team-planner--project-picker-remove-label-value="<%= t("global_team_planner.project_scope.picker_remove_label") %>">
+      <input
+        type="text"
+        class="form--text-field"
+        autocomplete="off"
+        placeholder="<%= t("global_team_planner.project_scope.picker_placeholder") %>"
+        aria-label="<%= t("global_team_planner.project_scope.picker_placeholder") %>"
+        data-global-team-planner--project-picker-target="search"
+        data-action="input->global-team-planner--project-picker#search">
+
+      <ul
+        class="op-global-team-planner--project-picker-results"
+        data-global-team-planner--project-picker-target="results"></ul>
+
+      <div
+        class="op-global-team-planner--project-picker-chips"
+        data-global-team-planner--project-picker-target="chips"></div>
+
+      <select
+        multiple
+        hidden
+        name="global_team_planner_view[selected_project_ids][]"
+        id="global_team_planner_view_selected_project_ids"
+        data-global-team-planner--project-picker-target="select">
+        <% selected_projects.each do |id, identifier, name| %>
+          <option value="<%= id %>" selected data-identifier="<%= identifier %>" data-name="<%= name %>">
+            <%= "#{identifier} #{name}" %>
+          </option>
+        <% end %>
+      </select>
+    </div>
+  </fieldset>
+</div>

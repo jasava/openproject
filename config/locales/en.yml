@@ -1962,6 +1962,16 @@ en:
         row_count: "Number of rows"
         column_count: "Number of columns"
         widgets: "Widgets"
+      global_team_planner_view:
+        name: "Name"
+        display_mode: "Display mode"
+        anchor_date: "Anchor date"
+        assignee_ids: "Team members"
+        project_scope_mode: "Project scope"
+        selected_project_ids: "Selected projects"
+        show_unassigned: "Show unassigned row"
+        group_by_project: "Group by project"
+        public: "Shared"
       journal:
         notes: "Notes"
         cause_type: "Cause type"

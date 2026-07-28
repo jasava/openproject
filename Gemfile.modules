@@ -40,7 +40,7 @@ group :opf_plugins do
   gem 'openproject-gantt',                     path: 'modules/gantt'
   gem 'openproject-calendar',                  path: 'modules/calendar'
   gem 'openproject-resource_management',       path: 'modules/resource_management'
-  gem 'openproject-community_team_planner',    path: 'modules/community_team_planner'
+  gem 'openproject-global_team_planner',       path: 'modules/global_team_planner'
   gem 'openproject-storages',                  path: 'modules/storages'
   gem 'openproject-wikis',                     path: 'modules/wikis'
   gem 'openproject-documents',                 path: 'modules/documents'

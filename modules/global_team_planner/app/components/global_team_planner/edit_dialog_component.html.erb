@@ -1,0 +1,54 @@
+<%#-- copyright
+OpenProject Global Team Planner
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%=
+  render(
+    Primer::Alpha::Dialog.new(
+      title:,
+      size: :large,
+      classes: "Overlay--size-large-portrait",
+      id: DIALOG_ID,
+      data: { "keep-open-on-submit": true }
+    )
+  ) do |d|
+    d.with_header(variant: :large)
+
+    d.with_body do
+      render(
+        GlobalTeamPlanner::FormComponent.new(
+          view: @view,
+          current_user: @current_user,
+          url: global_team_planner_view_path(@view),
+          method: :patch,
+          form_id: FORM_ID,
+          show_filters: true
+        )
+      )
+    end
+
+    d.with_footer do
+      render(
+        GlobalTeamPlanner::FooterComponent.new(
+          dialog_id: DIALOG_ID,
+          form_id: FORM_ID,
+          footer_id: FOOTER_ID,
+          submit_label: I18n.t("global_team_planner.edit_dialog.submit")
+        )
+      )
+    end
+  end
+%>

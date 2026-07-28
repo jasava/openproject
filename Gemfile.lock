@@ -119,11 +119,6 @@ PATH
       icalendar (>= 2.11.2, < 2.13.0)
 
 PATH
-  remote: modules/community_team_planner
-  specs:
-    openproject-community_team_planner (1.0.0)
-
-PATH
   remote: modules/costs
   specs:
     costs (1.0.0)
@@ -149,6 +144,11 @@ PATH
   specs:
     openproject-gitlab_integration (3.0.0)
       openproject-webhooks
+
+PATH
+  remote: modules/global_team_planner
+  specs:
+    openproject-global_team_planner (1.0.0)
 
 PATH
   remote: modules/grids
@@ -1683,11 +1683,11 @@ DEPENDENCIES
   openproject-bim!
   openproject-boards!
   openproject-calendar!
-  openproject-community_team_planner!
   openproject-documents!
   openproject-gantt!
   openproject-github_integration!
   openproject-gitlab_integration!
+  openproject-global_team_planner!
   openproject-job_status!
   openproject-ldap_groups!
   openproject-meeting!
@@ -2066,11 +2066,11 @@ CHECKSUMS
   openproject-bim (1.0.0)
   openproject-boards (1.0.0)
   openproject-calendar (1.0.0)
-  openproject-community_team_planner (1.0.0)
   openproject-documents (1.0.0)
   openproject-gantt (1.0.0)
   openproject-github_integration (1.0.0)
   openproject-gitlab_integration (3.0.0)
+  openproject-global_team_planner (1.0.0)
   openproject-job_status (1.0.0)
   openproject-ldap_groups (1.0.0)
   openproject-meeting (1.0.0)

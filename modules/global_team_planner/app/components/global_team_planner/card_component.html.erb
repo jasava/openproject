@@ -1,0 +1,73 @@
+<%#-- copyright
+OpenProject Global Team Planner
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%=
+  component_wrapper(
+    tag: "div",
+    class: [
+      "op-global-team-planner-card",
+      ("op-global-team-planner-card_milestone" if milestone?),
+      ("op-global-team-planner-card_draggable" if draggable?)
+    ].compact,
+    style: @grid_style,
+    role: "gridcell",
+    "aria-label": accessible_label,
+    tabindex: "0",
+    data: {
+      controller: draggable? ? "global-team-planner--card" : nil,
+      "global-team-planner--card-url-value": card_url,
+      "global-team-planner--card-start-date-value": start_date&.iso8601,
+      "global-team-planner--card-due-date-value": due_date&.iso8601
+    }
+  ) do
+%>
+  <% if draggable? %>
+    <span class="op-global-team-planner-card--resize-handle op-global-team-planner-card--resize-handle_start"
+          data-global-team-planner--card-target="startHandle"
+          role="button"
+          tabindex="0"
+          aria-label="<%= t("global_team_planner.card.resize_start") %>"></span>
+  <% end %>
+
+  <% if project_label %>
+    <span class="op-global-team-planner-card--project" id="<%= project_badge_id %>"><%= project_label %></span>
+    <%= render Primer::Alpha::Tooltip.new(
+          for_id: project_badge_id,
+          type: :description,
+          text: project_tooltip_text,
+          direction: :s
+        ) %>
+  <% end %>
+
+  <%= link_to(
+        subject_label, split_view_href,
+        class: "op-global-team-planner-card--subject",
+        data: { "turbo-frame": "content-bodyRight" }
+      ) %>
+
+  <% if status_name %>
+    <span class="op-global-team-planner-card--status"><%= status_name %></span>
+  <% end %>
+
+  <% if draggable? %>
+    <span class="op-global-team-planner-card--resize-handle op-global-team-planner-card--resize-handle_end"
+          data-global-team-planner--card-target="endHandle"
+          role="button"
+          tabindex="0"
+          aria-label="<%= t("global_team_planner.card.resize_end") %>"></span>
+  <% end %>
+<% end %>

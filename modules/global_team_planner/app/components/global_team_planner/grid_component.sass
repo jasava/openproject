@@ -1,0 +1,101 @@
+@import "helpers"
+
+.op-global-team-planner
+  display: flex
+  flex-direction: column
+  gap: var(--spacing-3, 12px)
+
+  &--toolbar
+    display: flex
+    align-items: center
+    gap: var(--spacing-2, 8px)
+    flex-wrap: wrap
+
+  &--nav
+    display: flex
+    align-items: center
+    gap: var(--spacing-2, 8px)
+
+  &--range-heading
+    margin: 0
+    font-size: var(--text-body-size-medium, 14px)
+    font-weight: var(--base-text-weight-semibold, 600)
+
+  &--mode-switch
+    display: flex
+    gap: 2px
+    margin-inline-start: auto
+
+  &--scroll
+    overflow-x: auto
+    overflow-y: hidden
+    border: 1px solid var(--borderColor-default)
+    border-radius: var(--borderRadius-medium, 6px)
+
+  &--surface
+    display: grid
+    grid-template-columns: minmax(220px, 240px) repeat(var(--op-global-team-planner-day-count), minmax(72px, 1fr))
+    grid-auto-rows: minmax(48px, auto)
+    min-width: max-content
+    position: relative
+
+  &--assignee-cell
+    position: sticky
+    left: 0
+    z-index: 2
+    display: flex
+    align-items: center
+    gap: var(--spacing-2, 8px)
+    padding: var(--spacing-2, 8px) var(--spacing-3, 12px)
+    background: var(--bgColor-default, #fff)
+    border-right: 1px solid var(--borderColor-default)
+    border-bottom: 1px solid var(--borderColor-muted)
+    min-width: 0
+
+    &_header
+      z-index: 3
+      background: var(--bgColor-muted, #f6f8fa)
+
+  &--assignee-name
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+    flex: 1
+
+  &--remove-row
+    flex-shrink: 0
+    color: var(--fgColor-muted)
+    cursor: pointer
+
+  &--unscheduled-count
+    flex-shrink: 0
+    font-size: var(--text-body-size-small, 12px)
+    color: var(--fgColor-muted)
+
+  &--day-header,
+  &--day-cell
+    border-right: 1px solid var(--borderColor-muted)
+    border-bottom: 1px solid var(--borderColor-muted)
+
+  &--day-header
+    position: sticky
+    top: 0
+    z-index: 1
+    background: var(--bgColor-muted, #f6f8fa)
+    display: flex
+    flex-direction: column
+    align-items: center
+    padding: var(--spacing-1, 4px) 0
+    font-size: var(--text-body-size-small, 12px)
+
+    &-weekday
+      color: var(--fgColor-muted)
+
+    &-number
+      font-weight: var(--base-text-weight-semibold, 600)
+
+  &--is-today
+    background-color: var(--bgColor-accent-muted, #ddf4ff)
+
+  &--is-non-working
+    background-image: repeating-linear-gradient(45deg, var(--bgColor-muted, #f6f8fa), var(--bgColor-muted, #f6f8fa) 6px, var(--bgColor-inset, #f0f0f0) 6px, var(--bgColor-inset, #f0f0f0) 12px)

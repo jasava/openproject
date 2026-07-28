@@ -1,0 +1,102 @@
+en:
+  label_global_team_planner: "Team Schedule"
+
+  global_team_planner:
+    label_plural: "Team Schedules"
+    query_name: "Work packages for %{name}"
+    description: "Plan and schedule work packages for your team across every project you can see."
+
+    display_modes:
+      work_week: "Work week"
+      one_week: "1 week"
+      two_weeks: "2 weeks"
+      four_weeks: "4 weeks"
+
+    action:
+      favorite: "Add to favorites"
+      unfavorite: "Remove from favorites"
+      make_public: "Make shared"
+      make_private: "Make private"
+      delete: "Delete"
+
+    project_scope:
+      label: "Projects"
+      all_visible: "All visible projects"
+      selected: "Selected projects"
+      my_projects: "My projects"
+      picker_label: "Selected projects"
+      picker_placeholder: "Search projects…"
+      picker_no_results: "No matching projects"
+      picker_remove_label: "Remove"
+
+    index:
+      title: "Team Schedules"
+      empty_state:
+        title: "No team schedules yet"
+        description: "Create a team schedule to see your team members and their work packages across projects on a timeline."
+      new_button: "Team schedule"
+
+    new_dialog:
+      title: "New team schedule"
+      submit: "Create"
+      name_label: "Name"
+      public_label: "Visible to other users"
+
+    edit_dialog:
+      title: "Rename team schedule"
+      submit: "Save"
+
+    grid:
+      today_button: "Today"
+      previous_range: "Previous"
+      next_range: "Next"
+      empty_rows: "Add a team member to start scheduling their work."
+      add_row_button: "Add member"
+      add_row_placeholder: "Search members…"
+      add_row_no_results: "No matching members found"
+      new_work_package_button: "New work package"
+      new_work_package_for_row: "New work package for %{name}"
+      remove_row_button: "Remove"
+      remove_row_confirm: "Remove this row? This only changes the schedule view, it does not modify or unassign any work package."
+      no_dates: "No dates set"
+      non_working_day: "Non-working day"
+      today: "Today"
+      date_range_navigation: "Date range navigation"
+      display_mode: "Display mode"
+      unassigned_row: "Unassigned"
+      unscheduled_count:
+        one: "%{count} without dates"
+        other: "%{count} without dates"
+
+    card:
+      aria_label: "%{id} %{subject}, assignee %{assignee}, %{start_date} to %{due_date}, status %{status}, project %{project}"
+      no_assignee: "Unassigned"
+      resize_start: "Change start date"
+      resize_end: "Change finish date"
+      project_tooltip: "Project: %{name}"
+
+    empty_state:
+      no_accessible_projects:
+        title: "No accessible projects"
+        description: "You do not currently have access to any project containing viewable work packages."
+      no_selected_projects:
+        title: "No projects selected"
+        description: "Select at least one project to see its work packages here."
+      no_team_rows:
+        title: "No team members added"
+        description: "Add team members or enable the Unassigned row to start scheduling work."
+      no_work_packages:
+        title: "No work packages in this range"
+        description: "No matching scheduled work packages intersect the selected dates."
+      filters_removed_all:
+        title: "No results match your filters"
+        description: "Your current filters removed every matching work package."
+        reset_button: "Reset filters"
+
+    flash:
+      create_success: "Successful creation."
+      update_success: "Successful update."
+      delete_success: "Successful deletion."
+      row_added: "Member added to the schedule."
+      row_removed: "Member removed from the schedule."
+      card_move_error: "Could not update the work package."

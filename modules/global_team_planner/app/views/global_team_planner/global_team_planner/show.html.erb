@@ -1,0 +1,66 @@
+<%#-- copyright
+OpenProject Global Team Planner
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<% page_title = @view.name.presence || t(:label_global_team_planner) %>
+<% html_title(page_title) %>
+
+<% content_for :content_body do %>
+  <%#
+    Phase "Global navigation": the page heading itself, not just the nav
+    entry, must make the multi-project scope obvious — no project appears in
+    the breadcrumb because this page is not nested under one.
+  %>
+  <%= render(Primer::OpenProject::PageHeader.new) do |header|
+        header.with_title { page_title }
+        header.with_breadcrumbs([t(:label_global_team_planner)])
+        header.with_description { t("global_team_planner.description") }
+
+        if @view.persisted? && @view.manageable?(current_user)
+          header.with_action_menu(
+            menu_arguments: { anchor_align: :end },
+            button_arguments: { icon: "kebab-horizontal", "aria-label": t(:label_more) }
+          ) do |menu|
+            menu.with_item(
+              label: t(:button_rename), href: edit_global_team_planner_view_path(@view),
+              content_arguments: { data: { controller: "async-dialog" } }
+            ) do |item|
+              item.with_leading_visual_icon(icon: :pencil)
+            end
+            menu.with_item(
+              label: @view.public? ? t("global_team_planner.action.make_private") : t("global_team_planner.action.make_public"),
+              href: toggle_public_global_team_planner_view_path(@view),
+              content_arguments: { data: { turbo_method: :post } }
+            ) do |item|
+              item.with_leading_visual_icon(icon: @view.public? ? :lock : :globe)
+            end
+            menu.with_item(
+              label: t("global_team_planner.action.delete"), scheme: :danger,
+              href: global_team_planner_view_path(@view),
+              content_arguments: { data: { turbo_method: :delete, turbo_confirm: t(:text_are_you_sure) } }
+            ) do |item|
+              item.with_leading_visual_icon(icon: :trash)
+            end
+          end
+        end
+      end %>
+
+  <%= render(@grid) %>
+<% end %>
+
+<% content_for :content_body_right do %>
+  <%= render(split_view_instance) if render_work_package_split_view? %>
+<% end %>

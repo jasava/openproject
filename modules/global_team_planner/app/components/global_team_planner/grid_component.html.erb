@@ -1,0 +1,199 @@
+<%#-- copyright
+OpenProject Global Team Planner
+Copyright (C) the OpenProject community
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+++#%>
+
+<%= component_wrapper(class: "op-global-team-planner") do %>
+  <div class="op-global-team-planner--toolbar">
+    <div class="op-global-team-planner--nav" role="group" aria-label="<%= t("global_team_planner.grid.date_range_navigation") %>">
+      <%= link_to nav_url(anchor: visible_range.previous_anchor),
+                  class: "Button Button--iconOnly Button--secondary",
+                  "aria-label": t("global_team_planner.grid.previous_range"),
+                  data: { "turbo-frame": wrapper_key } do %>
+        <%= render(Primer::Beta::Octicon.new(icon: "chevron-left")) %>
+      <% end %>
+
+      <%= link_to t("global_team_planner.grid.today_button"),
+                  nav_url(anchor: today),
+                  class: "Button Button--secondary",
+                  data: { "turbo-frame": wrapper_key } %>
+
+      <%= link_to nav_url(anchor: visible_range.next_anchor),
+                  class: "Button Button--iconOnly Button--secondary",
+                  "aria-label": t("global_team_planner.grid.next_range"),
+                  data: { "turbo-frame": wrapper_key } do %>
+        <%= render(Primer::Beta::Octicon.new(icon: "chevron-right")) %>
+      <% end %>
+
+      <h3 class="op-global-team-planner--range-heading">
+        <%= "#{helpers.format_date(visible_range.range_start)} – #{helpers.format_date(visible_range.range_end)}" %>
+      </h3>
+    </div>
+
+    <div class="op-global-team-planner--mode-switch" role="group" aria-label="<%= t("global_team_planner.grid.display_mode") %>">
+      <% GlobalTeamPlannerView::DISPLAY_MODES.each do |mode| %>
+        <%= link_to t("global_team_planner.display_modes.#{mode}"),
+                    nav_url(anchor: anchor_date, mode:),
+                    class: "Button Button--secondary #{'Button--selected' if mode == display_mode}",
+                    "aria-pressed": mode == display_mode,
+                    data: { "turbo-frame": wrapper_key } %>
+      <% end %>
+    </div>
+
+    <% if view.persisted? && view.manageable?(User.current) %>
+      <%= link_to t("global_team_planner.grid.add_row_button"),
+                  new_row_global_team_planner_view_path(view),
+                  class: "Button Button--primary",
+                  data: { controller: "async-dialog" } %>
+    <% end %>
+
+    <% if can_create_work_packages? %>
+      <%#
+        A plain full-page Turbo visit (no turbo-frame target): this route
+        renders the entire Angular app shell, not a fragment — scoping it to
+        the split-view frame would load that whole shell into a small pane.
+      %>
+      <%= link_to t("global_team_planner.grid.new_work_package_button"),
+                  new_work_package_url,
+                  class: "Button Button--primary" %>
+    <% end %>
+  </div>
+
+  <% if no_accessible_projects? %>
+    <%= render(Primer::Beta::Blankslate.new) do |blankslate|
+          blankslate.with_visual_icon(icon: :lock)
+          blankslate.with_heading(tag: :h2) { t("global_team_planner.empty_state.no_accessible_projects.title") }
+          blankslate.with_description { t("global_team_planner.empty_state.no_accessible_projects.description") }
+        end %>
+  <% elsif no_selected_projects? %>
+    <%= render(Primer::Beta::Blankslate.new) do |blankslate|
+          blankslate.with_visual_icon(icon: :"list-unordered")
+          blankslate.with_heading(tag: :h2) { t("global_team_planner.empty_state.no_selected_projects.title") }
+          blankslate.with_description { t("global_team_planner.empty_state.no_selected_projects.description") }
+        end %>
+  <% elsif no_team_rows? %>
+    <%= render(Primer::Beta::Blankslate.new) do |blankslate|
+          blankslate.with_visual_icon(icon: :people)
+          blankslate.with_heading(tag: :h2) { t("global_team_planner.empty_state.no_team_rows.title") }
+          blankslate.with_description { t("global_team_planner.empty_state.no_team_rows.description") }
+        end %>
+  <% else %>
+    <% if no_matching_work_packages? %>
+      <%= render(Primer::Alpha::Banner.new(description: t("global_team_planner.empty_state.no_work_packages.description"))) { t("global_team_planner.empty_state.no_work_packages.title") } %>
+    <% end %>
+
+    <div class="op-global-team-planner--scroll">
+      <div class="op-global-team-planner--surface"
+           role="grid"
+           aria-label="<%= view.name.presence || t(:label_global_team_planner) %>"
+           style="--op-global-team-planner-day-count: <%= days.size %>;"
+           data-anchor-date="<%= anchor_date.iso8601 %>"
+           data-display-mode="<%= display_mode %>"
+           data-view-id="<%= view.persisted? ? view.id : "" %>">
+
+        <div class="op-global-team-planner--assignee-cell op-global-team-planner--assignee-cell_header" style="grid-column: 1; grid-row: 1;" role="columnheader"></div>
+
+        <% days.each_with_index do |day, i| %>
+          <div class="op-global-team-planner--day-header <%= "op-global-team-planner--is-today" if day == today %> <%= "op-global-team-planner--is-non-working" if non_working_day?(day) %>"
+               style="grid-column: <%= i + 2 %>; grid-row: 1;"
+               role="columnheader"
+               aria-label="<%= "#{day.strftime('%A')}#{", #{t('global_team_planner.grid.non_working_day')}" if non_working_day?(day)}" %>">
+            <span class="op-global-team-planner--day-header-weekday"><%= day.strftime("%a") %></span>
+            <span class="op-global-team-planner--day-header-number"><%= day.day %></span>
+          </div>
+        <% end %>
+
+        <% rows.each_with_index do |principal, index| %>
+          <% row_num = row_number(index) %>
+          <div class="op-global-team-planner--assignee-cell" style="grid-column: 1; grid-row: <%= row_num %>;" role="rowheader">
+            <%= helpers.avatar(principal, size: "20", hide_name: true) %>
+            <span class="op-global-team-planner--assignee-name"><%= principal.name %></span>
+            <% if view.persisted? && view.manageable?(User.current) %>
+              <%= link_to remove_row_global_team_planner_view_path(view, principal_id: principal.id),
+                          class: "op-global-team-planner--remove-row",
+                          "aria-label": t("global_team_planner.grid.remove_row_button"),
+                          data: { "turbo-method": :delete, "turbo-frame": wrapper_key,
+                                  "turbo-confirm": t("global_team_planner.grid.remove_row_confirm") } do %>
+                <%= render(Primer::Beta::Octicon.new(icon: "x")) %>
+              <% end %>
+            <% end %>
+            <% if unscheduled_count(principal.id).positive? %>
+              <span class="op-global-team-planner--unscheduled-count">
+                <%= t("global_team_planner.grid.unscheduled_count", count: unscheduled_count(principal.id)) %>
+              </span>
+            <% end %>
+            <% if can_create_work_packages? %>
+              <%= link_to new_work_package_url(assignee: principal),
+                          class: "op-global-team-planner--new-work-package-for-row",
+                          "aria-label": t("global_team_planner.grid.new_work_package_for_row", name: principal.name) do %>
+                <%= render(Primer::Beta::Octicon.new(icon: "plus")) %>
+              <% end %>
+            <% end %>
+          </div>
+
+          <% days.each_with_index do |day, i| %>
+            <div class="op-global-team-planner--day-cell <%= "op-global-team-planner--is-today" if day == today %> <%= "op-global-team-planner--is-non-working" if non_working_day?(day) %>"
+                 style="grid-column: <%= i + 2 %>; grid-row: <%= row_num %>;"
+                 data-date="<%= day.iso8601 %>"
+                 data-column-index="<%= i + 2 %>"
+                 data-row-index="<%= row_num %>"
+                 data-principal-id="<%= principal.id %>"></div>
+          <% end %>
+
+          <% (cards_by_row[principal.id] || []).each do |work_package| %>
+            <%= render(
+                  GlobalTeamPlanner::CardComponent.new(
+                    work_package:,
+                    view:,
+                    grid_style: card_style(work_package, row_num)
+                  )
+                ) %>
+          <% end %>
+        <% end %>
+
+        <% if unassigned_row? %>
+          <% unassigned_row_num = unassigned_row_number %>
+          <div class="op-global-team-planner--assignee-cell" style="grid-column: 1; grid-row: <%= unassigned_row_num %>;" role="rowheader">
+            <span class="op-global-team-planner--assignee-name"><%= t("global_team_planner.grid.unassigned_row") %></span>
+            <% if unscheduled_count(nil).positive? %>
+              <span class="op-global-team-planner--unscheduled-count">
+                <%= t("global_team_planner.grid.unscheduled_count", count: unscheduled_count(nil)) %>
+              </span>
+            <% end %>
+          </div>
+
+          <% days.each_with_index do |day, i| %>
+            <div class="op-global-team-planner--day-cell <%= "op-global-team-planner--is-today" if day == today %> <%= "op-global-team-planner--is-non-working" if non_working_day?(day) %>"
+                 style="grid-column: <%= i + 2 %>; grid-row: <%= unassigned_row_num %>;"
+                 data-date="<%= day.iso8601 %>"
+                 data-column-index="<%= i + 2 %>"
+                 data-row-index="<%= unassigned_row_num %>"
+                 data-principal-id=""></div>
+          <% end %>
+
+          <% unassigned_cards.each do |work_package| %>
+            <%= render(
+                  GlobalTeamPlanner::CardComponent.new(
+                    work_package:,
+                    view:,
+                    grid_style: card_style(work_package, unassigned_row_num)
+                  )
+                ) %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
