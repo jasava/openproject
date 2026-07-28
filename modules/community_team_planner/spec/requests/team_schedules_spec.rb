@@ -76,6 +76,21 @@ RSpec.describe "TeamSchedules requests", :skip_csrf, type: :rails_request do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    context "with the work-package split view open" do
+      let(:work_package) { create(:work_package, project:) }
+
+      it "renders the split view alongside the grid, closing back to the schedule (minus split-view params)" do
+        login_as viewer
+
+        get project_team_schedule_path(project, schedule,
+                                       work_package_split_view: 1, work_package_id: work_package.id,
+                                       tab: "overview", anchor: "2026-08-03")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("opce-wp-split-view")
+      end
+    end
   end
 
   describe "POST create" do

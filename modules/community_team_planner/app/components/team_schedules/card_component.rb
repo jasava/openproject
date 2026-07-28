@@ -72,10 +72,16 @@ module TeamSchedules
     end
 
     def split_view_href
+      # `tab` must be present, not just default-able: WorkPackages::SplitViewHelper
+      # forwards `params[:tab]` verbatim into WorkPackages::Details::TabComponent,
+      # which calls `.to_sym` on it unconditionally — a missing tab param becomes
+      # `nil.to_sym` instead of falling back to the component's own `:overview`
+      # default.
       helpers.project_team_schedule_path(
         @project, @team_schedule,
         work_package_split_view: 1,
-        work_package_id: @work_package.id
+        work_package_id: @work_package.id,
+        tab: "overview"
       )
     end
 

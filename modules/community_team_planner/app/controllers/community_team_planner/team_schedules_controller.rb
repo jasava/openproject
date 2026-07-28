@@ -20,6 +20,7 @@
 module ::CommunityTeamPlanner
   class TeamSchedulesController < BaseController
     include OpTurbo::ComponentStream
+    include WorkPackages::WithSplitView
 
     menu_item :community_team_planner
 
@@ -179,6 +180,16 @@ module ::CommunityTeamPlanner
 
     def find_team_schedule
       @team_schedule = TeamSchedule.visible(current_user).where(project: @project).find(params.expect(:id))
+    end
+
+    # Where closing the work-package split view returns to. Stripping just
+    # the split-view-specific params (not the whole query string) keeps the
+    # schedule's date range/display mode in the URL, so the grid comes back
+    # in the same state per Phase 6 ("returns to the same schedule, date
+    # range, filters, and scroll position where practical").
+    def split_view_base_route
+      extra_params = request.query_parameters.except("work_package_split_view", "work_package_id", "tab")
+      project_team_schedule_path(@project, @team_schedule, **extra_params.symbolize_keys)
     end
 
     def build_team_schedule
